@@ -42,5 +42,16 @@ fun InfoScreen(
                 onCheckedChange = { onThemeChange(it) }
             )
         }
+        Spacer(modifier = Modifier.height(32.dp))
+        Text(
+            text = stringResource(R.string.developed_title),
+            style = androidx.compose.material3.MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
+        Text(
+            text = stringResource(R.string.author_info),
+            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
     }
 }

@@ -20,7 +20,7 @@
     <string name="settings_title">Settings</string>
     <string name="dark_mode">Dark mode</string>
     <string name="light_mode">Light mode</string>
-
-
+    <string name="developed_title">Developed by</string>
+    <string name="author_info">Ville-Pekka Alavuotunki, OUAS, Software Development major, TVT24KMO</string>
 
 </resources>
