@@ -7,4 +7,22 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Catppuccin Mocha Green (Dark) -->
+    <color name="mocha_primary">#A6E3A1</color>
+    <color name="mocha_secondary">#94E2D5</color>
+    <color name="mocha_background">#1E1E2E</color>
+    <color name="mocha_surface">#313244</color>
+    <color name="mocha_onPrimary">#1E1E2E</color>
+    <color name="mocha_onSecondary">#1E1E2E</color>
+    <color name="mocha_error">#F38BA8</color>
+
+    <!-- Catppuccin Latte Green (Light) -->
+    <color name="latte_primary">#40A02B</color>
+    <color name="latte_secondary">#179299</color>
+    <color name="latte_background">#EFF1F5</color>
+    <color name="latte_surface">#E6E9EF</color>
+    <color name="latte_onPrimary">#EFF1F5</color>
+    <color name="latte_onSecondary">#EFF1F5</color>
+    <color name="latte_error">#D20F39</color>
 </resources>
