@@ -11,17 +11,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.weatherapp.viewmodels.LocationViewModel
 
 @Composable
-fun LocationScreen(modifier: Modifier) {
+fun WeatherScreen(modifier: Modifier, viewModel: LocationViewModel) {
+
+    val location by viewModel.getLocationLiveData().observeAsState()
+    if (location!==null) {
+        // API CALL HERE
+    }
     val requestPermissionLauncher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission(),
             onResult = { isGranted: Boolean ->
                 if (isGranted) {
+                    viewModel.getLocationLiveData().getLocationData()
                 }
             }
         )
@@ -32,11 +41,11 @@ fun LocationScreen(modifier: Modifier) {
     )
     {
         Text(
-            text = "Latitude: ",
+            text = "Latitude: " + location?.latitude.toString(),
             modifier = Modifier.padding(top = 24.dp)
         )
         Text(
-            text = "Longitude: ",
+            text = "Longitude: " + location?.longitude.toString(),
             modifier = Modifier.padding(top = 8.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
