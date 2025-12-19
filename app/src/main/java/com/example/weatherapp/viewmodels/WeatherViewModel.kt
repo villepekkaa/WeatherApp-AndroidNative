@@ -1,34 +1,42 @@
 package com.example.weatherapp.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.model.WeatherApi
 import com.example.weatherapp.model.WeatherData
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Locale
+
+sealed interface WeatherUiState {
+    object Loading : WeatherUiState
+    data class Success(val data: WeatherData) : WeatherUiState
+    data class Error(val message: String?) : WeatherUiState
+}
 
 class WeatherViewModel : ViewModel() {
-    private val _weather = MutableLiveData<WeatherData?>()
-    val weather: LiveData<WeatherData?> = _weather
+    var weatherUiState: WeatherUiState by mutableStateOf(WeatherUiState.Loading)
+        private set
 
     fun fetchWeather(latitude: Double, longitude: Double) {
         viewModelScope.launch {
+            weatherUiState = WeatherUiState.Loading
             try {
                 val api = WeatherApi.getInstance()
                 val result = api.getWeatherData(latitude, longitude)
-                _weather.postValue(result)
+                weatherUiState = WeatherUiState.Success(result)
             } catch (e: Exception) {
                 Log.d("WeatherViewModel", e.message ?: "fetchWeather error")
-                _weather.postValue(null)
+                weatherUiState = WeatherUiState.Error(e.message)
             }
         }
     }
 
     fun formatTemperature(tempKelvin: Double?): String {
         val tempCelsius = (tempKelvin ?: 273.15) - 273.15
-        return String.format(Locale("fi", "FI"), "%.1f°C", tempCelsius)
+        return String.format(Locale.forLanguageTag("fi-FI"), "%.1f°C", tempCelsius)
     }
 }

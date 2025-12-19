@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,8 +25,7 @@ import coil.compose.AsyncImage
 import com.example.weatherapp.R
 import com.example.weatherapp.viewmodels.LocationViewModel
 import com.example.weatherapp.viewmodels.WeatherViewModel
-import java.util.Locale
-
+import com.example.weatherapp.viewmodels.WeatherUiState
 
 
 @Composable
@@ -36,8 +36,9 @@ fun WeatherScreen(
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val location by locationViewModel.getLocationLiveData().observeAsState()
-    val weather by weatherViewModel.weather.observeAsState()
     val permissionGranted by locationViewModel.getPermissionLiveData().observeAsState()
+
+    val uiState = weatherViewModel.weatherUiState
 
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -71,28 +72,49 @@ fun WeatherScreen(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-        weather?.let { data ->
-            val iconCode = data.weather?.getOrNull(0)?.icon
-            if (iconCode != null) {
-                val iconUrl = "https://openweathermap.org/img/wn/${iconCode}@2x.png"
-                AsyncImage(
-                    model = iconUrl,
-                    contentDescription = data.weather?.getOrNull(0)?.description ?: stringResource(R.string.weather_icon_description),
-                    modifier = Modifier.size(150.dp)
-                )
+        when (uiState) {
+            is WeatherUiState.Loading -> {
+                CircularProgressIndicator()
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = stringResource(R.string.loading_weather))
             }
-            Text(text = stringResource(R.string.location_label, data.name ?: "-"))
-            Text(text = stringResource(R.string.weather_label, data.weather?.getOrNull(0)?.description ?: "-"))
 
-            val fiLocale = Locale.forLanguageTag("fi-FI")
-            val tempCelsius = (data.main?.temp ?: 273.15) - 273.15
-            val tempText = String.format(fiLocale, "%.1f", tempCelsius).replace('.', ',') + " °C"
-            Text(text = stringResource(R.string.temperature_label, tempText))
+            is WeatherUiState.Error -> {
+                Text(text = uiState.message ?: "Error fetching weather")
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = {
+                    location?.let { weatherViewModel.fetchWeather(it.latitude, it.longitude) }
+                }) {
+                    Text(text = "Retry")
+                }
+            }
 
-        } ?: run {
-            CircularProgressIndicator()
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = stringResource(R.string.loading_weather))
+            is WeatherUiState.Success -> {
+                val data = (uiState as WeatherUiState.Success).data
+
+                val iconCode = data.weather.orEmpty().getOrNull(0)?.icon
+                if (iconCode != null) {
+                    val iconUrl = "https://openweathermap.org/img/wn/${iconCode}@2x.png"
+                    AsyncImage(
+                        model = iconUrl,
+                        contentDescription = data.weather.orEmpty().getOrNull(0)?.description ?: stringResource(R.string.weather_icon_description),
+                        modifier = Modifier.size(150.dp)
+                    )
+                }
+
+                val country = data.sys?.country
+                val locationText = if (!data.name.isNullOrBlank() && !country.isNullOrBlank()) {
+                    "${data.name}, $country"
+                } else {
+                    data.name ?: "-"
+                }
+
+                Text(text = stringResource(R.string.location_label, locationText))
+                Text(text = stringResource(R.string.weather_label, data.weather.orEmpty().getOrNull(0)?.description ?: "-"))
+
+                val tempText = weatherViewModel.formatTemperature(data.main?.temp)
+                Text(text = stringResource(R.string.temperature_label, tempText))
+            }
         }
 
         if (permissionGranted == false) {
