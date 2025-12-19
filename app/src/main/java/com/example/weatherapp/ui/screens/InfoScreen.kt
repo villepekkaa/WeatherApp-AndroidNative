@@ -42,7 +42,7 @@ fun InfoScreen(
                 onCheckedChange = { onThemeChange(it) }
             )
         }
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(64.dp))
         Text(
             text = stringResource(R.string.developed_title),
             style = androidx.compose.material3.MaterialTheme.typography.headlineSmall,
