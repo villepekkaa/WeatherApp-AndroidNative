@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -18,6 +20,20 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val properties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        var openWeatherApiKey = ""
+        if (localPropertiesFile.exists()) {
+            properties.load(localPropertiesFile.inputStream())
+            openWeatherApiKey = properties.getProperty("OPENWEATHER_API_KEY") ?: ""
+        }
+
+        buildConfigField(
+            "String",
+            "OPENWEATHER_API_KEY",
+            "\"$openWeatherApiKey\""
+        )
     }
 
     buildTypes {
@@ -38,8 +54,10 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
+
 
 dependencies {
     implementation(libs.androidx.core.ktx)
@@ -53,6 +71,9 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.play.services.location)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.coil.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
