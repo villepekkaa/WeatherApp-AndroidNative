@@ -16,12 +16,12 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 
-// custom light theme
+// Custom light theme colors
 val ContainerTextLight = Color(0xFF40a02b)
 val ContainerLight = Color(0xFFe6e9ef)
 val SecondaryContainerLight = Color(0xFF40a02b)
 
-// custom dark theme
+// Custom dark theme colors
 val ContainerTextDark = Color(0xFFa6e3a1)
 val ContainerDark = Color(0xFF1e1e2e)
 val SecondaryContainerDark = Color(0xFFa6e3a1)
